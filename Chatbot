@@ -1,0 +1,55 @@
+import spacy
+
+# Load spaCy English model
+nlp = spacy.load("en_core_web_sm")
+
+# Define intents and responses
+intents = {
+    "greet": ["hello", "hi", "hey"],
+    "goodbye": ["bye", "goodbye", "see you"],
+    "thanks": ["thank you", "thanks"],
+    "weather": ["weather", "forecast"],
+}
+
+responses = {
+    "greet": "Hello! How can I help you?",
+    "goodbye": "Goodbye! Have a great day.",
+    "thanks": "You're welcome!",
+    "weather": "Its 26 degree celsius and partly cloudy.Tonight the forecast is for a high of 29 degree and for a low of 20 degree.",
+}
+
+# Function to recognize intent
+def get_intent(text):
+    doc = nlp(text)
+    for token in doc:
+        for intent, keywords in intents.items():
+            if token.text.lower() in keywords:
+                return intent
+    return None
+
+# Function to extract entities (currently not used in this example)
+def get_entities(text):
+    doc = nlp(text)
+    entities = [ent.text for ent in doc.ents]
+    return entities
+
+# Function to get a response based on user input
+def get_response(user_input):
+    intent = get_intent(user_input)
+    # entities = get_entities(user_input)  # Uncomment if you want to use entity extraction
+
+    if intent:
+        return responses[intent]
+    else:
+        return "I'm sorry, I don't understand. Can you please rephrase?"
+
+# Main loop
+print("Chatbot: Hello! Type 'exit' to end the conversation.")
+while True:
+    user_input = input("You: ")
+    if user_input.lower() == "exit":
+        print("Chatbot: Goodbye!")
+        break
+
+    response = get_response(user_input)
+    print("Chatbot:", response)
